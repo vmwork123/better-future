@@ -3,8 +3,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { AppState } from "./types";
 import { demoState, emptyState } from "./defaults";
-import { getSessionEmail, loadSecureProfile, saveAccountProfile } from "./auth-local";
-import { FERPA_MODE } from "./ferpa";
+import { accountSavesDone, endAllSessions, getSessionEmail, loadSecureProfile, saveAccountProfile } from "./auth-local";
+import { isFerpaMode, writeFerpaCookie } from "./ferpa";
 
 const KEY = "aether.collegefit.v4";
 const OLD_KEYS = ["aether.collegefit.v3", "aether.collegefit.v2", "aether.collegefit.v1"];
@@ -55,6 +55,28 @@ function mergeState(saved: Partial<AppState> | null): AppState {
   };
 }
 
+/**
+ * Turn FERPA mode on or off, then reload so the whole app (and the server's headers) use the new mode.
+ * Signed-in students are signed out; their profile stays in the account and is converted at next login.
+ * A guest's work moves along: into this tab only (FERPA) or into localStorage (regular).
+ */
+export async function switchFerpaMode(on: boolean, state: AppState) {
+  if (state.accountEmail) {
+    await accountSavesDone();
+    endAllSessions();
+    localStorage.removeItem(KEY);
+    sessionStorage.removeItem(KEY);
+  } else if (on) {
+    sessionStorage.setItem(KEY, JSON.stringify(state));
+    for (const k of [KEY, ...OLD_KEYS, LEGACY_BACKUP_KEY, LEGACY_ACCESS_KEY]) localStorage.removeItem(k);
+  } else {
+    localStorage.setItem(KEY, JSON.stringify(state));
+    sessionStorage.removeItem(KEY);
+  }
+  writeFerpaCookie(on);
+  window.location.reload();
+}
+
 type Store = {
   state: AppState;
   hydrated: boolean;
@@ -70,7 +92,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    if (FERPA_MODE) {
+    if (isFerpaMode()) {
       // Never leave a readable profile behind in localStorage; guests keep theirs in this tab only.
       for (const k of [KEY, ...OLD_KEYS, LEGACY_BACKUP_KEY, LEGACY_ACCESS_KEY]) localStorage.removeItem(k);
       loadSecureProfile()
@@ -104,7 +126,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!hydrated) return;
-    if (FERPA_MODE) {
+    if (isFerpaMode()) {
       if (state.accountEmail) {
         sessionStorage.removeItem(KEY);
         saveAccountProfile(state.accountEmail, state);

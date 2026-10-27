@@ -36,7 +36,9 @@ University figures are labeled **Data last updated: 2024–25**. Always verify d
 
 ## FERPA mode (school deployments)
 
-Build with `NEXT_PUBLIC_FERPA_MODE=1` to get the version for schools. Locally: `npm run dev:ferpa`. On Vercel, use a separate project with that environment variable set, and optionally `NEXT_PUBLIC_PRIVACY_CONTACT` (an email shown on the privacy page).
+Anyone can turn FERPA mode on or off with the **FERPA mode** switch in the sidebar (or the Menu on phones). The choice is saved in an `aether-mode` cookie, so the server applies the matching headers (see `src/proxy.ts`). Switching signs the student out and reloads; a guest's work moves with them, and an account's profile is encrypted or decrypted the next time they log in to the other mode.
+
+For schools, build with `NEXT_PUBLIC_FERPA_MODE=1`: that version is locked to FERPA mode and has no switch. Locally: `npm run dev:ferpa`. On Vercel, use a separate project with that environment variable set, and optionally `NEXT_PUBLIC_PRIVACY_CONTACT` (an email shown on the privacy page). Use the locked build for any school deployment: on the regular site, students can turn the protections off.
 
 What changes:
 

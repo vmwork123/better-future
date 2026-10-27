@@ -7,7 +7,7 @@
  */
 
 import type { AppState } from "./types";
-import { FERPA_MODE, IDLE_LIMIT_MS } from "./ferpa";
+import { isFerpaMode, IDLE_LIMIT_MS } from "./ferpa";
 
 const ACCOUNTS_KEY = "aether.accounts.v1";
 const SESSION_KEY = "aether.session.v1";
@@ -127,7 +127,7 @@ async function openAccount(db: AccountDb, key: string, password: string) {
 }
 
 export function getSessionEmail(): string | null {
-  if (FERPA_MODE) return readSecureSession()?.email ?? null;
+  if (isFerpaMode()) return readSecureSession()?.email ?? null;
   try {
     return localStorage.getItem(SESSION_KEY);
   } catch {
@@ -162,7 +162,7 @@ export async function registerAccount(email: string, password: string, profile: 
   const hash = await deriveHash(password, salt);
   const withEmail = { ...profile, accountEmail: key };
   db[key] = { email: key, salt, hash, createdAt: new Date().toISOString() };
-  if (FERPA_MODE) {
+  if (isFerpaMode()) {
     const encKey = await openAccount(db, key, password);
     db[key].profileCipher = await encryptProfile(encKey, withEmail);
   } else {
@@ -182,7 +182,7 @@ export async function loginAccount(email: string, password: string): Promise<{ o
   if (hash !== acct.hash) return { ok: false, error: "Incorrect password." };
   try {
     let profile: AppState;
-    if (FERPA_MODE) {
+    if (isFerpaMode()) {
       const encKey = await openAccount(db, key, password);
       if (acct.profileCipher) {
         profile = await decryptProfile(encKey, acct.profileCipher);
@@ -192,6 +192,13 @@ export async function loginAccount(email: string, password: string): Promise<{ o
         delete db[key].profileJson;
       }
       saveDb(db);
+    } else if (acct.profileCipher && acct.encSalt) {
+      // Made or last used in FERPA mode: decrypt it and keep it as a plain profile while in regular mode.
+      profile = await decryptProfile(await deriveHash(password, acct.encSalt), acct.profileCipher);
+      db[key].profileJson = JSON.stringify({ ...profile, accountEmail: key });
+      delete db[key].profileCipher;
+      saveDb(db);
+      setSessionEmail(key);
     } else {
       profile = JSON.parse(acct.profileJson || "") as AppState;
       setSessionEmail(key);
@@ -204,7 +211,7 @@ export async function loginAccount(email: string, password: string): Promise<{ o
 }
 
 export function logoutAccount() {
-  if (FERPA_MODE) writeSecureSession(null);
+  if (isFerpaMode()) writeSecureSession(null);
   else setSessionEmail(null);
 }
 
@@ -212,7 +219,7 @@ let saveChain: Promise<void> = Promise.resolve();
 
 export function saveAccountProfile(email: string, profile: AppState) {
   const key = email.toLowerCase().trim();
-  if (FERPA_MODE) {
+  if (isFerpaMode()) {
     // Encryption is async; chain the saves so an older one never lands after a newer one.
     saveChain = saveChain
       .then(async () => {
@@ -235,6 +242,11 @@ export function saveAccountProfile(email: string, profile: AppState) {
     profileJson: JSON.stringify({ ...profile, accountEmail: key }),
   };
   saveDb(db);
+}
+
+/** Resolves once every queued FERPA-mode save has been written. */
+export function accountSavesDone() {
+  return saveChain;
 }
 
 export function loadAccountProfile(email: string): AppState | null {
@@ -260,6 +272,12 @@ export async function loadSecureProfile(): Promise<AppState | null> {
     writeSecureSession(null);
     return null;
   }
+}
+
+/** Sign out of both kinds of session, for when the mode switches. */
+export function endAllSessions() {
+  writeSecureSession(null);
+  setSessionEmail(null);
 }
 
 /** Remove one account and its profile from this device, and end its session. */

@@ -19,8 +19,9 @@ import {
 import { APP_NAME, APP_TAGLINE } from "../lib/constants";
 import { logoutAccount } from "../lib/auth-local";
 import { studentName } from "../lib/defaults";
-import { FERPA_MODE } from "../lib/ferpa";
+import { isFerpaMode } from "../lib/ferpa";
 import { useStore } from "../lib/store";
+import { FerpaModeToggle } from "./FerpaModeToggle";
 import { IdleSignOut } from "./IdleSignOut";
 import { PageBackButton } from "./PageBackButton";
 
@@ -190,8 +191,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </div>
           )}
         </div>
-        {FERPA_MODE ? (
-          <Link href="/privacy" className="mt-3 px-2 text-xs font-semibold text-(--muted) hover:text-(--ink)">
+        <FerpaModeToggle className="mt-3 px-2" />
+        {isFerpaMode() ? (
+          <Link href="/privacy" className="mt-1 px-2 text-xs font-semibold text-(--muted) hover:text-(--ink)">
             Privacy &amp; student records
           </Link>
         ) : null}
@@ -230,7 +232,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </header>
         <main className="page-enter page-pad mx-auto w-full max-w-6xl py-6 md:py-8">
           {pathname !== "/home" ? <PageBackButton /> : null}
-          {FERPA_MODE && !signedIn ? (
+          {isFerpaMode() && !signedIn ? (
             <div className="mb-4 rounded-2xl border border-(--line) bg-(--accent-soft) px-4 py-3 text-sm text-(--ink)">
               You&apos;re not signed in, so your work is kept only until you close this tab.{" "}
               <Link href="/account" className="font-semibold text-(--accent) hover:underline">
@@ -242,7 +244,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </Link>
             </div>
           ) : null}
-          {FERPA_MODE ? <IdleSignOut /> : null}
+          {isFerpaMode() ? <IdleSignOut /> : null}
           {children}
         </main>
       </div>
@@ -307,6 +309,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Link href="/account" className="btn btn-ghost w-full justify-start">
                 <UserRound size={16} /> Account
               </Link>
+              <FerpaModeToggle className="px-1" />
               {!hasProfile && !signedIn ? (
                 <Link href="/onboarding" className="btn btn-primary w-full">
                   Create your profile

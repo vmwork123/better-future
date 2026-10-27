@@ -6,7 +6,7 @@ import { useState } from "react";
 import { APP_NAME } from "../../lib/constants";
 import { COLLEGES } from "../../data/colleges";
 import { deleteAccount, logoutAccount } from "../../lib/auth-local";
-import { FERPA_MODE } from "../../lib/ferpa";
+import { isFerpaMode } from "../../lib/ferpa";
 import { useStore } from "../../lib/store";
 import { PageHeader } from "../../components/ui";
 
@@ -78,7 +78,7 @@ export default function SettingsPage() {
             ) : null}
           </div>
         </section>
-        {FERPA_MODE ? (
+        {isFerpaMode() ? (
           <section className="card p-5">
             <h2 className="font-semibold">Your records</h2>
             <p className="mt-1 text-sm text-(--muted)">

@@ -7,7 +7,7 @@ import { PageHeader } from "../../components/ui";
 import { useStore } from "../../lib/store";
 import { loginAccount, logoutAccount, registerAccount } from "../../lib/auth-local";
 import { mergeStateSafe } from "../../lib/merge-state";
-import { FERPA_MODE } from "../../lib/ferpa";
+import { isFerpaMode } from "../../lib/ferpa";
 
 export default function AccountPage() {
   return (
@@ -76,13 +76,13 @@ function AccountContent() {
         eyebrow="Account"
         title={signedIn ? "Your account" : "Sign in"}
         subtitle={
-          FERPA_MODE
+          isFerpaMode()
             ? "Create an account to keep your profile on this device, encrypted with your password. You're signed out after 30 minutes without activity or when you close the tab."
             : "Create an account to keep your profile, uploads, and progress across sessions on this device. Google/Apple SSO can be connected when provider keys are configured."
         }
       />
 
-      {FERPA_MODE && expired && !signedIn ? (
+      {isFerpaMode() && expired && !signedIn ? (
         <p className="mb-4 text-sm text-(--ink)">You were signed out after 30 minutes without activity. Log in to continue.</p>
       ) : null}
 
@@ -128,7 +128,7 @@ function AccountContent() {
               {busy ? "Please wait…" : mode === "login" ? "Log in" : "Create account"}
             </button>
           </form>
-          {FERPA_MODE ? (
+          {isFerpaMode() ? (
             <p className="mt-4 text-xs text-(--muted)">
               Your profile is encrypted with your password and never leaves this device. If you forget the password, the
               profile can&apos;t be recovered. <Link href="/privacy" className="font-semibold hover:underline">How your records are protected</Link>
