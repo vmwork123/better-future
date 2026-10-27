@@ -1,6 +1,8 @@
 import type { ActivityCategory, FactorImportance, Importance } from "./types";
 
-export const APP_NAME = "Aether";
+export const APP_NAME = "Avenir";
+/** Shown as a tag beside the name and in the tab title. Set to "" to drop the label. */
+export const APP_EDITION = "Demo";
 export const APP_TAGLINE = "College · Career · Resume";
 
 export const NAV_ITEMS = [

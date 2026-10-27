@@ -16,7 +16,7 @@ import {
   UserRound,
   X,
 } from "lucide-react";
-import { APP_NAME, APP_TAGLINE } from "../lib/constants";
+import { APP_EDITION, APP_NAME, APP_TAGLINE } from "../lib/constants";
 import { logoutAccount } from "../lib/auth-local";
 import { studentName } from "../lib/defaults";
 import { isFerpaMode } from "../lib/ferpa";
@@ -75,6 +75,15 @@ function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
+function EditionTag() {
+  if (!APP_EDITION) return null;
+  return (
+    <span className="shrink-0 rounded-full bg-(--accent-soft) px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-(--accent)">
+      {APP_EDITION}
+    </span>
+  );
+}
+
 function phoneTabActive(pathname: string, href: string) {
   if (href === "/profile") return pathname.startsWith("/profile");
   return isActive(pathname, href);
@@ -126,7 +135,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-dvh md:grid md:grid-cols-[240px_1fr]">
       <aside className="sticky top-0 hidden h-dvh flex-col border-r border-(--line) bg-(--bg-warm)/80 px-3 py-5 md:flex">
         <Link href="/home" className="block px-2">
-          <div className="serif text-[1.85rem] leading-none tracking-tight text-(--ink)">{APP_NAME}</div>
+          <div className="flex items-center gap-2">
+            <span className="serif text-[1.85rem] leading-none tracking-tight text-(--ink)">{APP_NAME}</span>
+            <EditionTag />
+          </div>
           <p className="mt-2 text-[11px] leading-snug tracking-wide text-(--muted)">{APP_TAGLINE}</p>
         </Link>
 
@@ -209,8 +221,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           }}
         >
           <div className="flex items-center justify-between gap-2 px-3 py-2">
-            <Link href="/home" className="serif min-w-0 truncate text-xl">
-              {APP_NAME}
+            <Link href="/home" className="flex min-w-0 items-center gap-2">
+              <span className="serif truncate text-xl">{APP_NAME}</span>
+              <EditionTag />
             </Link>
             <div className="flex shrink-0 items-center gap-2">
               <Link href="/upload" className="btn btn-primary px-3">

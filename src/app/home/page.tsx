@@ -59,7 +59,7 @@ export default function DashboardPage() {
         <section className="card mb-6 p-6 md:p-7">
           <h2 className="serif text-2xl text-(--ink) md:text-[1.75rem]">Start in about 15 minutes</h2>
           <p className="mt-2 max-w-3xl text-sm leading-relaxed text-(--muted)">
-            Enter your academics, activities, career goals, and ideal college. Aether will generate
+            Enter your academics, activities, career goals, and ideal college. Avenir will generate
             matches, comparisons, and resume help from that one profile.
           </p>
           <div className="mt-5 flex flex-wrap gap-2">

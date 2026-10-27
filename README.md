@@ -1,4 +1,4 @@
-# Aether — College Admissions & Career MVP
+# Avenir — College Admissions & Career MVP
 
 A modern web app for students 16–24 that combines a college advisor, college search/matching, resume builder, writing assistant, and student dashboard.
 
@@ -48,9 +48,9 @@ What changes:
 - Settings → **Your records**: download everything (review), edit it in the profile (amend), or delete it from the device.
 - A `/privacy` page explains all of this to students and parents.
 
-What the software can't do. These are for the school or district and whoever runs Aether:
+What the software can't do. These are for the school or district and whoever runs Avenir:
 
-- Sign a data-privacy agreement with each district that names Aether a "school official" with a legitimate educational interest, and check state student-privacy laws (for example California SOPIPA, Texas Education Code ch. 32, New York Ed Law 2-d).
+- Sign a data-privacy agreement with each district that names Avenir a "school official" with a legitimate educational interest, and check state student-privacy laws (for example California SOPIPA, Texas Education Code ch. 32, New York Ed Law 2-d).
 - Keep hosting logs to a minimum. Search requests (college and high-school names, home state, ZIP) pass through the server, and the host may log request URLs.
 - Have a breach-response and data-deletion process, and tell students to log out on shared devices.
 - Forgotten passwords can't be recovered, because the profile is encrypted with the password. Students should download their records now and then.

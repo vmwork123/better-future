@@ -1,5 +1,5 @@
 /**
- * End-to-end smoke suite for Aether / college-fit.
+ * End-to-end smoke suite for Avenir / college-fit.
  * Usage: node scripts/e2e-smoke.mjs [baseUrl]
  */
 import { spawn } from "node:child_process";
@@ -181,8 +181,8 @@ try {
 
   {
     const { res, text } = await get("/");
-    if (res.ok && /Aether/i.test(text)) ok("brand Aether in HTML");
-    else fail("brand Aether in HTML", "Aether string missing");
+    if (res.ok && /Avenir/i.test(text)) ok("brand Avenir in HTML");
+    else fail("brand Avenir in HTML", "Avenir string missing");
   }
 } catch (e) {
   fail("suite crashed", e instanceof Error ? e.message : String(e));

@@ -16,13 +16,13 @@ const sans = Source_Sans_3({
 });
 
 export const metadata: Metadata = {
-  title: "Aether — College Fit & Applications",
+  title: "Avenir Demo — College Fit & Applications",
   description:
     "Build your path: discover careers that fit you, find schools you can realistically get into, and see what to do next. Estimates, not guarantees.",
-  applicationName: "Aether",
+  applicationName: "Avenir",
   appleWebApp: {
     capable: true,
-    title: "Aether",
+    title: "Avenir",
     statusBarStyle: "default",
   },
   formatDetection: {
